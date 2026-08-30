@@ -33,6 +33,27 @@ Picking **dark** rewrites that condition to `all`, so the rule applies. Picking
 **light** rewrites it to `not all`, so it is switched off rather than merely
 unmatched. Conditions for preferences you have not set are left untouched.
 
+### What the CSSOM is
+
+The CSS Object Model is the browser's own parsed form of every stylesheet on the
+page — the same objects it consults to decide what each element looks like, not
+a copy kept alongside them. JavaScript reaches it through `document.styleSheets`:
+each sheet exposes a `cssRules` list, and every `@media` block in that list is a
+`CSSMediaRule` whose condition is readable and writable as `media.mediaText`.
+
+Writing to that property is not a request the browser gets to defer. It
+re-evaluates the rule and restyles the page immediately, with no reload and no
+re-parsing of your source. Nothing is injected and no selector is touched, so
+the outcome is indistinguishable from your stylesheet having asked for that
+condition itself — which is why a component under emulation behaves the way it
+will in front of a real reader.
+
+That is the entire mechanism. The addon walks `document.styleSheets`, descends
+into nested rules, and for each `CSSMediaRule` mentioning a `prefers-*` feature
+swaps the condition for `all` or `not all`. It remembers each rule's original
+condition text, so every toggle rewrites from what you wrote rather than from
+the previous rewrite.
+
 See [How it works](?path=/story/how-it-works-rewriting-conditions--rules) for the
 full rewriting table, computed live.
 
