@@ -1,7 +1,7 @@
-import type { StorybookConfig } from '@storybook/react-vite'
+import { defineMain } from '@storybook/react-vite/node'
 import remarkGfm from 'remark-gfm'
 
-export default {
+export default defineMain({
   stories: [
     '../src/**/*.mdx',
     '../src/**/*.stories.@(ts|tsx)',
@@ -25,4 +25,4 @@ export default {
   framework: '@storybook/react-vite',
   // Enables `story.test()` on CSF Next story factories.
   features: { experimentalTestSyntax: true },
-} satisfies StorybookConfig
+})
