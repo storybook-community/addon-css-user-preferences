@@ -63,6 +63,10 @@ const sourceFor = (setting: string) =>
     // your own CSS, unchanged
     @media (prefers-color-scheme: dark) { … }
 
+    // CSF Next
+    export const Story = meta.story({ ${setting} })
+
+    // CSF 3
     export const Story = { ${setting} }
   `;
 
@@ -214,6 +218,12 @@ export const PerStory = meta.story({
     }),
     showSource({
       source: dedent`
+        // CSF Next
+        export const Story = meta.story({
+          parameters: defineCssUserPrefsParam({ 'prefers-color-scheme': 'dark' })
+        })
+
+        // CSF 3
         export const Story = {
           parameters: defineCssUserPrefsParam({ 'prefers-color-scheme': 'dark' })
         }
