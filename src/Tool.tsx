@@ -9,6 +9,7 @@ import { TOOL_ID } from "./constants";
 import * as options from "./options";
 import { TooltipList } from "./components/TooltipList";
 import { Icon } from "./components/Icon";
+import { Select } from "./components/Select";
 
 export const Tool = () => {
   const [globals, updateGlobals] = useGlobals(useStorybookGlobals);
@@ -26,7 +27,7 @@ export const Tool = () => {
       id,
       title: id,
       right: (
-        <select
+        <Select
           defaultValue={globals[id]}
           onChange={(event) => {
             onHide();
@@ -38,7 +39,7 @@ export const Tool = () => {
           {Object.values(options.features[id]).map((option) => (
             <option key={option}>{option}</option>
           ))}
-        </select>
+        </Select>
       ),
     }));
 

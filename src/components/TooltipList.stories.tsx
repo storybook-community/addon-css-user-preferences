@@ -4,6 +4,7 @@ import { expect } from "storybook/test";
 import { ThemeProvider, ensure, themes } from "storybook/theming";
 import React from "react";
 import preview from "../../.storybook/preview";
+import { Select } from "./Select";
 import { TooltipList } from "./TooltipList";
 import * as options from "../options";
 
@@ -26,12 +27,12 @@ const featureItems = options.keys.map((id) => ({
   id,
   title: id,
   right: (
-    <select defaultValue="" aria-label={id}>
+    <Select defaultValue="" aria-label={id}>
       <option value="">{options.defaultOption}</option>
       {options.features[id].map((option) => (
         <option key={option}>{option}</option>
       ))}
-    </select>
+    </Select>
   ),
 }));
 
@@ -55,7 +56,7 @@ export const AllFeatures = meta.story({
         <TooltipList items={options.keys.map((id) => ({
           id,
           title: id,
-          right: <select>…</select>,
+          right: <Select>…</Select>,
         }))} />
       `,
     }),
