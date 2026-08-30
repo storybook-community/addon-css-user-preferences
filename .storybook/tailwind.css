@@ -1,0 +1,12 @@
+@layer theme, base, repobuddy-storybook, components, utilities;
+@import "tailwindcss";
+
+@source "../src/**";
+
+/*
+ Class-based dark mode instead of the `(prefers-color-scheme: dark)` default.
+ This addon rewrites that very media query, so a media-query dark variant would
+ make the Storybook chrome follow the emulated preference rather than the
+ dark-mode toggle.
+*/
+@custom-variant dark (&:where(.dark, .dark *));
