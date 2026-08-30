@@ -1,4 +1,5 @@
 import type { StorybookConfig } from '@storybook/react-vite'
+import remarkGfm from 'remark-gfm'
 
 export default {
   stories: [
@@ -7,7 +8,15 @@ export default {
     '../stories/**/*.stories.@(js|jsx|ts|tsx)',
   ],
   addons: [
-    '@storybook/addon-docs',
+    {
+      name: '@storybook/addon-docs',
+      // Storybook does not ship GFM, so MDX tables render as plain text without this.
+      options: {
+        mdxPluginOptions: {
+          mdxCompileOptions: { remarkPlugins: [remarkGfm] },
+        },
+      },
+    },
     '@storybook/addon-vitest',
     'storybook-addon-tag-badges',
     '@storybook-community/storybook-dark-mode',
