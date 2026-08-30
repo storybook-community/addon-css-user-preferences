@@ -1,30 +1,28 @@
-# v0.0.3 (Fri Mar 11 2022)
+# @storybook-community/addon-css-user-preferences
 
-#### ⚠️ Pushed to `main`
+## v0.0.3 (Fri Mar 11 2022)
+
+### ⚠️ Pushed to `main`
 
 - update github url ([@jonathantneal](https://github.com/jonathantneal))
 
-#### Authors: 1
+### Authors: 1
 
 - Jonathan Neal ([@jonathantneal](https://github.com/jonathantneal))
 
----
+## v0.0.2 (Fri Mar 11 2022)
 
-# v0.0.2 (Fri Mar 11 2022)
-
-#### ⚠️ Pushed to `main`
+### ⚠️ Pushed to `main`
 
 - update github ref ([@jonathantneal](https://github.com/jonathantneal))
 
-#### Authors: 1
+### Authors: 1
 
 - Jonathan Neal ([@jonathantneal](https://github.com/jonathantneal))
 
----
+## v0.0.1 (Fri Mar 11 2022)
 
-# v0.0.1 (Fri Mar 11 2022)
-
-#### ⚠️ Pushed to `main`
+### ⚠️ Pushed to `main`
 
 - remove esm compatibility for webpack compatibility :( ([@jonathantneal](https://github.com/jonathantneal))
 - Remove postinstall to share on StackBlitz ([@jonathantneal](https://github.com/jonathantneal))
@@ -35,6 +33,6 @@
 - project setup ([@jonathantneal](https://github.com/jonathantneal))
 - Initial commit ([@jonathantneal](https://github.com/jonathantneal))
 
-#### Authors: 1
+### Authors: 1
 
 - Jonathan Neal ([@jonathantneal](https://github.com/jonathantneal))
