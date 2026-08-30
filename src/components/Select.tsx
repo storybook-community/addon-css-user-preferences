@@ -17,4 +17,9 @@ export const Select = styled.select(({ theme }) => ({
   fontSize: theme.typography.size.s1,
   lineHeight: "18px",
   padding: "2px 4px",
+
+  "&:disabled": {
+    cursor: "not-allowed",
+    opacity: 0.6,
+  },
 }));

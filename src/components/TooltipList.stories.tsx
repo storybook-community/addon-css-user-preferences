@@ -86,6 +86,55 @@ AllFeatures.test("defaults every feature to the browser's own setting", async ({
   }
 });
 
+/** A feature the story pins in its own `globals` is shown, but not editable. */
+export const PinnedByTheStory = meta.story({
+  name: "Pinned by the story",
+  tags: ["spec", "unit"],
+  args: {
+    items: [
+      {
+        id: "prefers-color-scheme",
+        title: "prefers-color-scheme",
+        right: (
+          <Select
+            defaultValue="dark"
+            disabled
+            aria-label="prefers-color-scheme"
+            title="This story sets prefers-color-scheme to dark."
+          >
+            <option value="">{options.defaultOption}</option>
+            {options.features["prefers-color-scheme"].map((option) => (
+              <option key={option}>{option}</option>
+            ))}
+          </Select>
+        ),
+      },
+    ],
+  },
+  decorators: [
+    withStoryCard({
+      title: "A preference the reader cannot change",
+      content: (
+        <p>
+          Storybook lets a story's own <code>globals</code> win over the
+          toolbar, so a change made here would be discarded. The row shows the
+          pinned value read-only instead, and says why on hover.
+        </p>
+      ),
+    }),
+  ],
+});
+
+PinnedByTheStory.test("cannot be changed from the toolbar", async ({ canvas }) => {
+  const select = canvas.getByLabelText("prefers-color-scheme") as HTMLSelectElement;
+  await expect(select).toBeDisabled();
+});
+
+PinnedByTheStory.test("still shows the value the story pinned", async ({ canvas }) => {
+  const select = canvas.getByLabelText("prefers-color-scheme") as HTMLSelectElement;
+  await expect(select.value).toBe("dark");
+});
+
 /** Nothing to emulate renders an empty list rather than a broken one. */
 export const Empty = meta.story({
   tags: ["unit"],
