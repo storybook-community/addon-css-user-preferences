@@ -11,18 +11,16 @@ This project uses [mise](https://mise.jdx.dev) to pin Node.js and pnpm. Once mis
 ```sh
 mise install
 pnpm install
+pnpm playwright:i   # Chromium, for the browser-mode tests
 ```
 
 ### Development scripts
 
-- `pnpm start` runs babel in watch mode and starts Storybook
-- `pnpm build` build and package your addon code
-
-### Switch from TypeScript to JavaScript
-
-Don't want to use TypeScript? We offer a handy eject command: `pnpm eject-ts`
-
-This will convert all code to JS. It is a destructive process, so we recommended running this before you start writing any code.
+- `pnpm storybook` starts Storybook, loading the addon straight from `src`
+- `pnpm build` builds the addon with tsdown into `dist`
+- `pnpm test` runs the Vitest browser-mode suite
+- `pnpm check` type-checks without emitting
+- `pnpm verify` runs all three
 
 ## What's included?
 
@@ -30,11 +28,11 @@ This will convert all code to JS. It is a destructive process, so we recommended
 
 The addon code lives in `src`. It demonstrates all core addon related concepts. The three [UI paradigms](https://storybook.js.org/docs/react/addons/addon-types#ui-based-addons)
 
-- `src/Tool.js`
+- `src/Tool.tsx`
 - `src/Panel.js`
 - `src/Tab.js`
 
-Which, along with the addon itself, are registered in `src/preset/manager.js`.
+Which, along with the addon itself, are registered in `src/manager.ts`.
 
 Managing State and interacting with a story:
 
@@ -42,7 +40,7 @@ Managing State and interacting with a story:
 - `src/withRoundTrip.js` & `src/Panel.js` demonstrates two-way communication using channels.
 - `src/Tab.js` demonstrates how to use `useParameter` to access the current story's parameters.
 
-Your addon might use one or more of these patterns. Feel free to delete unused code. Update `src/preset/manager.js` and `src/preset/preview.js` accordingly.
+Your addon might use one or more of these patterns. Feel free to delete unused code. Update `src/manager.ts` and `src/preview.ts` accordingly.
 
 Lastly, configure you addon name in `src/constants.js`.
 
