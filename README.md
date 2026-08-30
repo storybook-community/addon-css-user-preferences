@@ -9,14 +9,14 @@ This toolbar addon allows you to emulate CSS user preferences in Storybook.
 First, install the addon.
 
 ```sh
-pnpm add -D storybook-addon-css-user-preferences
+pnpm add -D @storybook-community/addon-css-user-preferences
 ```
 
 Add this line to your `main.js` file (create this file inside your Storybook config directory if needed).
 
 ```js
 module.exports = {
-  addons: ['storybook-addon-css-user-preferences'],
+  addons: ['@storybook-community/addon-css-user-preferences'],
 };
 ```
 
