@@ -1,34 +1,41 @@
-import type { DecoratorFunction } from "@storybook/addons";
 import type {
-  AnyFramework,
+  DecoratorFunction,
   PartialStoryFn,
+  Renderer,
   StoryContext,
-} from "@storybook/csf";
+} from "storybook/internal/types";
 import { PARAM_KEY } from "./constants";
 import { processCSS } from "./processCSS";
-import { useEffect, useGlobals as useAddonGlobals } from "@storybook/addons";
-import { Globals, useGlobals } from "./useGlobals";
+import { useEffect, useGlobals as useAddonGlobals } from "storybook/preview-api";
+import type { Globals } from "./useGlobals";
+import { useGlobals } from "./useGlobals";
 
-export const withGlobals: DecoratorFunction<void> = (
-  storyFn: PartialStoryFn<AnyFramework>,
-  context: StoryContext<AnyFramework>
+export const withGlobals: DecoratorFunction<Renderer> = (
+  storyFn: PartialStoryFn<Renderer>,
+  context: StoryContext<Renderer>
 ) => {
-  const [globals, updateGlobals] = useGlobals(useAddonGlobals);
+  const [globals] = useGlobals(useAddonGlobals);
 
-  // apply user parameter overrides
-  const overrides = Object.assign({}, context.parameters[PARAM_KEY]) as Globals
+  /*
+   A story's `cssUserPrefs` parameter supplies a default for any feature the
+   toolbar has not set. Merging it here rather than writing it back through
+   `updateGlobals` keeps the decorator free of side effects: Storybook ignores
+   a globals update issued during render, so the write never applied.
+  */
+  const overrides = (context.parameters[PARAM_KEY] ?? {}) as Partial<Globals>;
+  const features = { ...globals } as Globals;
+
   let feature: keyof Globals;
   for (feature in overrides) {
-    if (globals[feature] === undefined && overrides[feature] !== undefined) {
-      updateGlobals(overrides)
-      break
+    if (features[feature] === undefined) {
+      features[feature] = overrides[feature];
     }
   }
 
   // transform css
   useEffect(() => {
-    processCSS(document.styleSheets, globals);
-  }, Object.values(globals));
+    processCSS(document.styleSheets, features);
+  }, Object.values(features));
 
   return storyFn();
 };

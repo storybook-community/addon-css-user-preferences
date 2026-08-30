@@ -1,6 +1,8 @@
-import React, { FunctionComponent, useCallback, SyntheticEvent } from "react";
-import { styled } from "@storybook/theming";
-import ListItem, { ListItemProps } from "./List";
+import React, { useCallback } from "react";
+import type { FunctionComponent, SyntheticEvent } from "react";
+import { styled } from "storybook/theming";
+import ListItem from "./List";
+import type { ListItemProps } from "./List";
 
 const List = styled.div<{}>(
   {

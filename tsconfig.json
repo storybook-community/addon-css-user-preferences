@@ -1,22 +1,24 @@
 {
   "compilerOptions": {
-    "allowSyntheticDefaultImports": true,
-    "baseUrl": ".",
-    "emitDecoratorMetadata": true,
-    "esModuleInterop": true,
-    "experimentalDecorators": true,
-    "incremental": false,
     "isolatedModules": true,
+    // Classic runtime on purpose: Storybook's manager runtime maps bare `react`
+    // to a `__REACT__` global with no internals key, and provides no global for
+    // `react/jsx-runtime`. The automatic runtime would inline a second React
+    // JSX runtime and crash the manager. Vite/Vitest override this to
+    // `automatic` for the dev and test paths, where real React is bundled.
     "jsx": "react",
-    "lib": ["es2021", "dom"],
-    "module": "commonjs",
+    "lib": ["esnext", "dom", "dom.iterable"],
+    "module": "preserve",
+    "moduleResolution": "bundler",
     "noImplicitAny": true,
-    "rootDir": "./src",
+    "noImplicitOverride": true,
+    "noUncheckedIndexedAccess": true,
+    "resolveJsonModule": true,
     "skipLibCheck": true,
     "strictNullChecks": true,
-    "target": "esnext"
+    "target": "esnext",
+    "verbatimModuleSyntax": true,
+    "noEmit": true
   },
-  "include": [
-    "src/**/*"
-  ],
+  "include": [".storybook/**/*.ts", ".storybook/**/*.tsx", "src/**/*.ts", "src/**/*.tsx", "*.config.ts"]
 }

@@ -2,11 +2,11 @@ export const title = 'Emulate CSS User Preferences'
 
 export const features = {
   "prefers-color-scheme": ["light", "dark"],
-  "prefers-constrast": ["no-preference", "less", "more", "custom"],
+  "prefers-contrast": ["no-preference", "less", "more", "custom"],
   "prefers-reduced-data": ["no-preference", "reduce"],
   "prefers-reduced-motion": ["no-preference", "reduce"],
   "prefers-reduced-transparency": ["no-preference", "reduce"],
-};
+} as const;
 
 export const defaultOption = 'system default'
 

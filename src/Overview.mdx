@@ -1,0 +1,66 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Overview" />
+
+# CSS User Preferences
+
+Emulate the `prefers-*` CSS user preferences in Storybook, so you can see how a
+component responds to dark mode, reduced motion, or reduced data without
+changing your operating system settings.
+
+## What makes it different
+
+Most preference addons toggle a class on the root element, which means your CSS
+has to be written for the addon:
+
+```css
+/* only works while the addon is driving it */
+.dark .button { background: black; }
+```
+
+This addon rewrites the `@media` conditions in the live CSSOM instead. Your own
+rules stay exactly as you wrote them, and the ones that fire are the ones you
+actually ship:
+
+```css
+/* unchanged, and still what gets tested */
+@media (prefers-color-scheme: dark) {
+  .button { background: black; }
+}
+```
+
+Picking **dark** rewrites that condition to `all`, so the rule applies. Picking
+**light** rewrites it to `not all`, so it is switched off rather than merely
+unmatched. Conditions for preferences you have not set are left untouched.
+
+See [How it works](?path=/story/how-it-works-rewriting-conditions--rules) for the
+full rewriting table, computed live.
+
+## Install
+
+```sh
+pnpm add -D @storybook-community/addon-css-user-preferences
+```
+
+See [Installation](?path=/docs/installation--docs) for registering it and for
+the other entry points.
+
+## Use it
+
+Pick a preference from the toolbar and the preview updates. To pin one for a
+single story, set the parameter:
+
+```ts
+import { defineCssUserPrefsParam } from '@storybook-community/addon-css-user-preferences'
+
+export const DarkOnly = meta.story({
+  parameters: defineCssUserPrefsParam({ 'prefers-color-scheme': 'dark' }),
+})
+```
+
+The toolbar still wins if a reader picks a value themselves, so the parameter
+acts as a default rather than a lock.
+
+See [Usage](?path=/story/usage-emulating-preferences--from-the-toolbar) for
+working examples, and [Supported preferences](?path=/story/usage-supported-preferences--table)
+for every feature and value.

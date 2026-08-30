@@ -1,0 +1,39 @@
+name: verify
+
+on:
+  pull_request:
+    branches:
+      - main
+  # Called by release.yml, so a push to main is verified before it can publish.
+  workflow_call:
+
+permissions:
+  contents: read
+
+# Not keyed on github.workflow: when release.yml calls this workflow that
+# resolves to the caller's name, colliding with the release job's own group.
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      # Node and pnpm versions come from mise.toml, the same ones used locally.
+      - name: Set up mise
+        uses: jdx/mise-action@v4
+        with:
+          install: true
+          cache: true
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        uses: storybook-community/.github/.github/actions/setup-playwright@main
+
+      - name: Verify
+        run: pnpm verify

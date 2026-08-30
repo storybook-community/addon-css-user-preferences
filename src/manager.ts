@@ -1,8 +1,8 @@
-import { addons, types } from "@storybook/addons";
-import * as options from "../options";
+import { addons, types } from "storybook/manager-api";
+import * as options from "./options";
 
-import { ADDON_ID, TOOL_ID } from "../constants";
-import { Tool } from "../Tool";
+import { ADDON_ID, TOOL_ID } from "./constants";
+import { Tool } from "./Tool";
 
 // Register the addon
 addons.register(ADDON_ID, () => {
