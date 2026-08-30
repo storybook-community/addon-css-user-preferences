@@ -50,53 +50,43 @@ Storybook addons are listed in the [catalog](https://storybook.js.org/addons) an
 
 ## Release Management
 
-### Setup
+Releases run on [changesets](https://github.com/changesets/changesets). Deciding
+what a change is worth is separate from publishing it.
 
-This project is configured to use [auto](https://github.com/intuit/auto) for release management. It generates a changelog and pushes it to both GitHub and npm. Therefore, you need to configure access to both:
+### Making a change
 
-- [`NPM_TOKEN`](https://docs.npmjs.com/creating-and-viewing-access-tokens#creating-access-tokens) Create a token with both _Read and Publish_ permissions.
-- [`GH_TOKEN`](https://github.com/settings/tokens) Create a token with the `repo` scope.
+Every pull request that changes published behaviour needs a changeset:
 
-Then open your `package.json` and edit the following fields:
-
-- `name`
-- `author`
-- `repository`
-
-#### Local
-
-To use `auto` locally create a `.env` file at the root of your project and add your tokens to it:
-
-```bash
-GH_TOKEN=<value you just got from GitHub>
-NPM_TOKEN=<value you just got from npm>
+```sh
+pnpm cs
 ```
 
-Lastly, **create labels on GitHub**. You’ll use these labels in the future when making changes to the package.
-
-```bash
-pnpm dlx auto create-labels
-```
-
-If you check on GitHub, you’ll now see a set of labels that `auto` would like you to use. Use these to tag future pull requests.
-
-#### GitHub Actions
-
-This template comes with GitHub actions already set up to publish your addon anytime someone pushes to your repository.
-
-Go to `Settings > Secrets`, click `New repository secret`, and add your `NPM_TOKEN`.
+Pick `patch`, `minor` or `major`, write a sentence a consumer would want to read
+in the changelog, and commit the generated file in `.changeset/`. Changes that
+never reach the package — tests, CI, contributor docs — need no changeset.
 
 ### Creating a release
 
-To create a release locally you can run the following command, otherwise the GitHub action will make the release for you.
+Nobody publishes by hand. Merging to `main` runs `.github/workflows/release.yml`,
+which verifies the change and then:
 
-```sh
-pnpm release
-```
+- if unreleased changesets are waiting, opens or updates a **version packages**
+  pull request that applies the version bump and writes `CHANGELOG.md`;
+- if that pull request is what just merged, publishes the new version to npm and
+  tags the release.
 
-That will:
+So a release is one review away: merge the version packages PR when the changelog
+reads right.
 
-- Build and package the addon code
-- Bump the version
-- Push a release to GitHub and npm
-- Push a changelog to GitHub
+### npm authentication
+
+There is no `NPM_TOKEN`. The release workflow publishes with [npm trusted
+publishing](https://docs.npmjs.com/trusted-publishers/), which exchanges a GitHub
+OIDC token for credentials that live for minutes and attaches a provenance
+attestation to the release.
+
+That requires a trusted publisher registered at
+`npmjs.com/package/@storybook-community/addon-css-user-preferences/access`, naming
+this repository and `release.yml` — the _caller_ workflow's filename, not the
+reusable workflow it calls. npm validates the caller. Until that registration
+exists the publish step fails with a 401.
