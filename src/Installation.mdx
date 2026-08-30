@@ -1,0 +1,78 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Installation" />
+
+# Installation
+
+## Requirements
+
+Storybook 10 and React 18 or 19. The package is ESM only.
+
+## Install
+
+```sh
+pnpm add -D @storybook-community/addon-css-user-preferences
+```
+
+```sh
+npm install --save-dev @storybook-community/addon-css-user-preferences
+```
+
+```sh
+yarn add --dev @storybook-community/addon-css-user-preferences
+```
+
+## Register
+
+Add it to the `addons` list in `.storybook/main.ts`:
+
+```ts
+import type { StorybookConfig } from '@storybook/react-vite'
+
+export default {
+  stories: ['../src/**/*.stories.@(ts|tsx)'],
+  addons: ['@storybook-community/addon-css-user-preferences'],
+  framework: '@storybook/react-vite',
+} satisfies StorybookConfig
+```
+
+### With CSF Next
+
+If your project uses `definePreview`, register the addon there instead. This
+gives you the typed parameter helper without a separate import path:
+
+```ts
+// .storybook/preview.ts
+import { definePreview } from '@storybook/react-vite'
+import cssUserPrefs from '@storybook-community/addon-css-user-preferences'
+
+export default definePreview({
+  addons: [cssUserPrefs()],
+})
+```
+
+Both forms register the same toolbar and decorator. Use one or the other, not
+both.
+
+## Check it worked
+
+Start Storybook and look for the toolbar button:
+
+```sh
+pnpm storybook
+```
+
+Open any story with a `prefers-color-scheme` rule and switch the preference. If
+nothing changes, confirm the rule is a real `@media` query in a stylesheet the
+preview loads. The addon rewrites conditions in the CSSOM, so inline `style`
+attributes and CSS-in-JS that never produces a media rule are not affected.
+
+## Entry points
+
+| import | what it gives you |
+| --- | --- |
+| `@storybook-community/addon-css-user-preferences` | the CSF Next addon, `defineCssUserPrefsParam`, and the `options` reference |
+| `.../preview` | preview annotations, for manual registration |
+| `.../manager` | the toolbar registration, for manual registration |
+
+Next: [Usage](?path=/story/usage-emulating-preferences--from-the-toolbar).

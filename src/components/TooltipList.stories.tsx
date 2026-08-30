@@ -8,7 +8,7 @@ import { TooltipList } from "./TooltipList";
 import * as options from "../options";
 
 const meta = preview.meta({
-  title: "Addon/TooltipList",
+  title: "Internals/Toolbar list",
   component: TooltipList,
   tags: ["internal"],
   // These are manager components: they read Storybook's theme, which the

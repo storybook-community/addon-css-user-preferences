@@ -40,9 +40,9 @@ function Subject() {
 }
 
 const meta = preview.meta({
-  title: "Addon/withGlobals",
+  title: "Usage/Emulating preferences",
   component: Subject,
-  tags: ["func"],
+  tags: ["use-case"],
 });
 
 const colorOf = (el: Element) => getComputedStyle(el).color;
@@ -67,7 +67,8 @@ const sourceFor = (setting: string) =>
   `;
 
 /** Globals are the primary mechanism: the toolbar writes them. */
-export const GlobalPrefersDark = meta.story({
+export const FromTheToolbar = meta.story({
+  name: "From the toolbar",
   tags: ["spec", "use-case", "integration"],
   globals: { "prefers-color-scheme": "dark" },
   decorators: [
@@ -84,17 +85,18 @@ export const GlobalPrefersDark = meta.story({
   ],
 });
 
-GlobalPrefersDark.test("rewrites the matching condition to all", async ({ canvasElement }) => {
+FromTheToolbar.test("rewrites the matching condition to all", async ({ canvasElement }) => {
   await waitFor(() => expect(conditionsOf(canvasElement)[0]).toBe("all"));
 });
 
-GlobalPrefersDark.test("applies the dark rule", async ({ canvas }) => {
+FromTheToolbar.test("applies the dark rule", async ({ canvas }) => {
   const subject = canvas.getByTestId("subject");
   await waitFor(() => expect(colorOf(subject)).toBe(GREEN));
 });
 
 /** The opposite value disables the query, so the base rule wins. */
-export const GlobalPrefersLight = meta.story({
+export const TheOppositeValue = meta.story({
+  name: "Switching a rule off",
   tags: ["use-case", "integration"],
   globals: { "prefers-color-scheme": "light" },
   decorators: [
@@ -112,17 +114,18 @@ export const GlobalPrefersLight = meta.story({
   ],
 });
 
-GlobalPrefersLight.test("rewrites the condition to not all", async ({ canvasElement }) => {
+TheOppositeValue.test("rewrites the condition to not all", async ({ canvasElement }) => {
   await waitFor(() => expect(conditionsOf(canvasElement)[0]).toBe("not all"));
 });
 
-GlobalPrefersLight.test("falls back to the base rule", async ({ canvas }) => {
+TheOppositeValue.test("falls back to the base rule", async ({ canvas }) => {
   const subject = canvas.getByTestId("subject");
   await waitFor(() => expect(colorOf(subject)).toBe(RED));
 });
 
 /** Two features at once must not interfere with each other. */
 export const TwoFeaturesAtOnce = meta.story({
+  name: "Two preferences at once",
   tags: ["use-case", "integration"],
   globals: {
     "prefers-color-scheme": "dark",
@@ -158,6 +161,7 @@ TwoFeaturesAtOnce.test("rewrites both conditions", async ({ canvasElement }) => 
 
 /** Selecting one feature must leave every other query untouched. */
 export const OnlyTheSelectedFeature = meta.story({
+  name: "Other queries are untouched",
   tags: ["spec", "integration"],
   globals: { "prefers-color-scheme": "dark" },
   decorators: [
@@ -194,7 +198,8 @@ OnlyTheSelectedFeature.test("does not apply the unselected feature", async ({ ca
  * The parameter path is the per-story override. It supplies a default for any
  * feature the toolbar has not set.
  */
-export const ParameterPrefersDark = meta.story({
+export const PerStory = meta.story({
+  name: "Pinning one per story",
   tags: ["use-case", "props", "integration"],
   parameters: defineCssUserPrefsParam({ "prefers-color-scheme": "dark" }),
   decorators: [
@@ -217,11 +222,11 @@ export const ParameterPrefersDark = meta.story({
   ],
 });
 
-ParameterPrefersDark.test("applies the story parameter", async ({ canvas }) => {
+PerStory.test("applies the story parameter", async ({ canvas }) => {
   const subject = canvas.getByTestId("subject");
   await waitFor(() => expect(colorOf(subject)).toBe(GREEN));
 });
 
-ParameterPrefersDark.test("rewrites the condition too", async ({ canvasElement }) => {
+PerStory.test("rewrites the condition too", async ({ canvasElement }) => {
   await waitFor(() => expect(conditionsOf(canvasElement)[0]).toBe("all"));
 });

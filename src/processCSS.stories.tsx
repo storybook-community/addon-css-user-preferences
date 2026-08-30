@@ -108,13 +108,14 @@ function RewriteTable() {
 }
 
 const meta = preview.meta({
-  title: "Addon/processCSS",
+  title: "How it works/Rewriting conditions",
   component: RewriteTable,
-  tags: ["func", "internal"],
+  tags: ["spec"],
 });
 
 /** The rewriting rules, as a live table. */
 export const Rules = meta.story({
+  name: "The rewriting rules",
   tags: ["spec", "unit"],
   decorators: [
     withStoryCard({

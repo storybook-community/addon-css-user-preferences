@@ -14,6 +14,20 @@ import "./tailwind.repobuddy-storybook.css";
 export default definePreview({
   parameters: {
     docs: { codePanel: true },
+    options: {
+      // Reader order: what it is, how to use it, how it works, then internals.
+      storySort: {
+        order: [
+          'Overview',
+          'Installation',
+          'Usage',
+          ['Emulating preferences', 'Supported preferences'],
+          'How it works',
+          'Examples',
+          'Internals',
+        ],
+      },
+    },
     ...defineDarkModeParam({
       current: "light",
       darkClass: ["dark", "dark:bg-black", "dark:text-white"],

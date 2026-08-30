@@ -6,7 +6,7 @@ import preview from "../../.storybook/preview";
 import { Icon } from "./Icon";
 
 const meta = preview.meta({
-  title: "Addon/Icon",
+  title: "Internals/Icon",
   component: Icon,
   tags: ["internal"],
 });
