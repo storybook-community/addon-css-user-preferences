@@ -20,6 +20,7 @@ export default definePreview({
         order: [
           'Overview',
           'Installation',
+          'Playground',
           'Usage',
           ['Emulating preferences', 'Supported preferences'],
           'How it works',
