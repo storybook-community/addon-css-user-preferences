@@ -55,6 +55,7 @@
     "build": "tsdown",
     "build:watch": "pnpm build --watch",
     "clean": "rimraf dist coverage storybook-static",
+    "cs": "changeset",
     "check": "tsc --noEmit",
     "test": "vitest run",
     "w": "vitest",
@@ -62,12 +63,16 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "playwright:i": "playwright install --with-deps chromium",
-    "verify": "run-s check build test"
+    "verify": "run-s check build test",
+    "version": "changeset version",
+    "release": "pnpm build && changeset publish"
   },
   "dependencies": {
     "polished": "^4.3.1"
   },
   "devDependencies": {
+    "@changesets/changelog-github": "^1.0.0",
+    "@changesets/cli": "^3.0.1",
     "@repobuddy/storybook": "^2.32.1",
     "@storybook-community/storybook-dark-mode": "^7.1.3",
     "@storybook/addon-docs": "^10.5.10",
