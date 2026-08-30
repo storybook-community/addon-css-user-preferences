@@ -2,15 +2,16 @@ import type { WithHideFn } from "./types";
 import type { Globals } from "./useGlobals";
 
 import React, { useCallback } from "react";
+import { useGlobals as useStorybookGlobals } from "storybook/manager-api";
 import { useGlobals } from "./useGlobals";
-import { IconButton, WithTooltip } from "@storybook/components";
+import { IconButton, WithTooltip } from "storybook/internal/components";
 import { TOOL_ID } from "./constants";
 import * as options from "./options";
 import { TooltipList } from "./components/TooltipList";
 import { Icon } from "./components/Icon";
 
 export const Tool = () => {
-  const [globals, updateGlobals] = useGlobals();
+  const [globals, updateGlobals] = useGlobals(useStorybookGlobals);
 
   const toggle = useCallback(
     (id: keyof Globals, value: Globals[typeof id]) =>
@@ -29,7 +30,8 @@ export const Tool = () => {
           defaultValue={globals[id]}
           onChange={(event) => {
             onHide();
-            toggle(id, event.currentTarget.value);
+            // the empty option clears the preference; the rest are feature values
+            toggle(id, event.currentTarget.value as Globals[typeof id]);
           }}
         >
           <option value="">{options.defaultOption}</option>

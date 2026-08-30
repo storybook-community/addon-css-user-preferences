@@ -1,5 +1,6 @@
-import React, { FunctionComponent, ReactNode, ComponentProps } from "react";
-import { styled } from "@storybook/theming";
+import React from "react";
+import type { ComponentProps, FunctionComponent, ReactNode } from "react";
+import { styled } from "storybook/theming";
 import { transparentize } from "polished";
 
 export interface TitleProps {}
@@ -88,11 +89,11 @@ export interface ListItemProps
 }
 
 const ListItem: FunctionComponent<ListItemProps> = ({
-  loading,
-  left,
-  title,
-  center,
-  right,
+  loading = false,
+  left = null,
+  title = <span>Loading state</span>,
+  center = null,
+  right = null,
   ...rest
 }) => (
   <Item {...rest}>
@@ -106,13 +107,5 @@ const ListItem: FunctionComponent<ListItemProps> = ({
     {right && <Right>{right}</Right>}
   </Item>
 );
-
-ListItem.defaultProps = {
-  loading: false,
-  left: null,
-  title: <span>Loading state</span>,
-  center: null,
-  right: null,
-};
 
 export default ListItem;

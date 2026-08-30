@@ -6,7 +6,7 @@ export const features = {
   "prefers-reduced-data": ["no-preference", "reduce"],
   "prefers-reduced-motion": ["no-preference", "reduce"],
   "prefers-reduced-transparency": ["no-preference", "reduce"],
-};
+} as const;
 
 export const defaultOption = 'system default'
 
