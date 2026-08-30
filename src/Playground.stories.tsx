@@ -53,6 +53,21 @@ const CSS = `
     .cup-glass { background: rgb(59, 130, 246); }
   }
 
+  /* prefers-contrast */
+  .cup-contrast {
+    border: 1px solid var(--edge);
+    border-radius: 6px;
+    padding: 2px 10px;
+    font-size: 12px;
+    color: #6b7280;
+  }
+  @media (prefers-contrast: more) {
+    .cup-contrast { border-color: var(--ink); color: var(--ink); font-weight: 700; }
+  }
+  @media (prefers-contrast: less) {
+    .cup-contrast { border-color: transparent; color: #9ca3af; }
+  }
+
   /* prefers-reduced-data */
   .cup-media {
     width: 90px; height: 22px; border-radius: 6px;
@@ -82,6 +97,12 @@ function Card() {
         <div className="cup-row">
           <span className="cup-label">transparency</span>
           <div className="cup-glass" data-testid="glass" />
+        </div>
+        <div className="cup-row">
+          <span className="cup-label">contrast</span>
+          <span className="cup-contrast" data-testid="contrast">
+            Subtle label
+          </span>
         </div>
         <div className="cup-row">
           <span className="cup-label">data saving</span>
@@ -125,6 +146,9 @@ export const Playground = meta.story({
         }
         @media (prefers-reduced-transparency: reduce) {
           .cup-glass { background: rgb(59, 130, 246); }
+        }
+        @media (prefers-contrast: more) {
+          .cup-contrast { border-color: var(--ink); color: var(--ink); }
         }
       `,
     }),
@@ -179,6 +203,27 @@ Playground.test("leaves everything alone by default", async ({ canvas }) => {
   await waitFor(() => expect(bg(card)).toBe("rgb(255, 255, 255)"));
   expect(getComputedStyle(spinner).animationName).toBe("cup-spin");
 });
+
+Playground.test(
+  "more contrast strengthens the label",
+  { globals: { "prefers-contrast": "more" } },
+  async ({ canvas }) => {
+    const label = canvas.getByTestId("contrast");
+    await waitFor(() => expect(getComputedStyle(label).color).toBe("rgb(26, 26, 26)"));
+    expect(getComputedStyle(label).fontWeight).toBe("700");
+  }
+);
+
+Playground.test(
+  "less contrast softens the label",
+  { globals: { "prefers-contrast": "less" } },
+  async ({ canvas }) => {
+    const label = canvas.getByTestId("contrast");
+    await waitFor(() =>
+      expect(getComputedStyle(label).borderTopColor).toBe("rgba(0, 0, 0, 0)")
+    );
+  }
+);
 
 Playground.test(
   "reduced data drops the decorative gradient",
