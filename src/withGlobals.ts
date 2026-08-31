@@ -5,6 +5,7 @@ import type {
   StoryContext,
 } from "storybook/internal/types";
 import { PARAM_KEY } from "./constants";
+import { emulateMatchMedia } from "./matchMedia";
 import { processCSS } from "./processCSS";
 import { useGlobals as useAddonGlobals } from "storybook/preview-api";
 import type { Globals } from "./useGlobals";
@@ -84,6 +85,12 @@ export const withGlobals: DecoratorFunction<Renderer> = (
   current = features;
   observeStyleSheets();
   processAll();
+
+  /*
+   Patched here, for the same reason the rewrite above runs during render: a
+   component may read a preference as it mounts.
+  */
+  emulateMatchMedia(features);
 
   return storyFn();
 };

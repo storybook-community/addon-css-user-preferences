@@ -36,6 +36,33 @@ export const parameters = {
 };
 ```
 
+## JavaScript reads the same preference
+
+Rewriting the CSSOM only reaches CSS. A component that branches in JavaScript —
+a `useMediaQuery` hook, a theme library resolving its initial theme, a
+reduced-motion check gating an animation — reads `window.matchMedia`, so the
+addon patches that too while a preference is being emulated:
+
+```js
+// with the toolbar set to dark
+window.matchMedia('(prefers-color-scheme: dark)').matches // true
+window.matchMedia('(prefers-color-scheme: light)').matches // false
+```
+
+The patched `MediaQueryList` dispatches a `change` event when the toolbar
+changes a preference, so a subscriber follows the toolbar instead of reading a
+correct first value and then going stale. `addEventListener('change')`,
+`onchange`, and the deprecated `addListener` all work.
+
+Only the emulated part of a query is substituted. A preference left at its
+system default, and everything else in a compound condition, is still evaluated
+by the browser. A query shape the addon cannot express is answered with the real
+value rather than a guess.
+
+Returning every preference to its system default puts the browser's own
+`window.matchMedia` back, so a Storybook that is not emulating anything is left
+untouched.
+
 ## Options
 
 ### prefers-color-scheme

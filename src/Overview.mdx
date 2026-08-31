@@ -57,6 +57,26 @@ the previous rewrite.
 See [How it works](?path=/story/how-it-works-rewriting-conditions--rules) for the
 full rewriting table, computed live.
 
+### JavaScript reads the same preference
+
+The CSSOM is only half of what a component consults. A `useMediaQuery` hook, a
+theme library resolving its initial theme, a reduced-motion check that gates an
+animation in JavaScript — all of them ask `window.matchMedia`, which the CSSOM
+rewrite does not reach. Left alone, they would keep reporting the real operating
+system value while the CSS around them was emulated.
+
+So while a preference is being emulated, `window.matchMedia` is patched as well.
+A query naming an emulated feature is answered with the emulated result, and the
+`MediaQueryList` it returns dispatches a `change` event when the toolbar changes
+a preference, so a subscriber follows the toolbar rather than going quietly
+stale. Everything else — an unset preference, a viewport condition, the rest of
+a compound query — is still the browser's own answer, and a query shape the
+addon cannot express falls back to the real value rather than guessing.
+
+Returning every preference to its system default puts the browser's own function
+back, so a Storybook that is not emulating anything is untouched. See
+[Emulating matchMedia](?path=/story/how-it-works-emulating-matchmedia--in-javascript).
+
 ## Install
 
 ```sh
