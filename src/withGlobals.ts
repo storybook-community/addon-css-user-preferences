@@ -22,6 +22,9 @@ let observer: MutationObserver | undefined;
 /** Elements that can bring a stylesheet with them. */
 const SHEET = 'style, link[rel="stylesheet"]';
 
+/** The ones whose sheet arrives later, over the network. */
+const LINK = 'link[rel="stylesheet"]';
+
 /**
  * Rewrites conditions in every stylesheet the document currently has.
  *
@@ -29,6 +32,28 @@ const SHEET = 'style, link[rel="stylesheet"]';
  * repeatedly is idempotent and recovers from an earlier set of preferences.
  */
 const processAll = () => processCSS(document.styleSheets, current);
+
+/**
+ * Rewrites again once a `<link>`'s sheet has arrived.
+ *
+ * A `<link>` is in the document before its sheet is: `link.sheet` stays `null`
+ * until the request resolves and `document.styleSheets` does not list the sheet
+ * before then, so the pass its own insertion triggers cannot reach it. Loading
+ * is not a DOM mutation either, so nothing re-fires the observer when the sheet
+ * does arrive. Waiting for `load` closes that gap; `processCSS` is idempotent,
+ * so the extra pass is free of consequence.
+ */
+function processWhenLoaded(node: Element) {
+  const links = node.matches(LINK)
+    ? [node as HTMLLinkElement]
+    : [...node.querySelectorAll<HTMLLinkElement>(LINK)];
+
+  for (const link of links) {
+    if (link.sheet) continue;
+
+    link.addEventListener("load", processAll, { once: true });
+  }
+}
 
 /**
  * Watches for stylesheets mounting after the story has rendered.
@@ -43,6 +68,8 @@ function observeStyleSheets() {
   if (observer || typeof MutationObserver === "undefined") return;
 
   observer = new MutationObserver((mutations) => {
+    let found = false;
+
     for (const mutation of mutations) {
       for (const node of mutation.addedNodes) {
         // The sheet is usually a descendant of the subtree being mounted, not
@@ -50,11 +77,13 @@ function observeStyleSheets() {
         if (!(node instanceof Element)) continue;
 
         if (node.matches(SHEET) || node.querySelector(SHEET)) {
-          processAll();
-          return;
+          found = true;
+          processWhenLoaded(node);
         }
       }
     }
+
+    if (found) processAll();
   });
 
   observer.observe(document, { childList: true, subtree: true });
