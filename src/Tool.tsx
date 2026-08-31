@@ -9,9 +9,10 @@ import { TOOL_ID } from "./constants";
 import * as options from "./options";
 import { TooltipList } from "./components/TooltipList";
 import { Icon } from "./components/Icon";
+import { Select } from "./components/Select";
 
 export const Tool = () => {
-  const [globals, updateGlobals] = useGlobals(useStorybookGlobals);
+  const [globals, updateGlobals, pinned] = useGlobals(useStorybookGlobals);
 
   const toggle = useCallback(
     (id: keyof Globals, value: Globals[typeof id]) =>
@@ -22,25 +23,37 @@ export const Tool = () => {
   );
 
   const createItems = ({ onHide }: WithHideFn) =>
-    options.keys.map((id) => ({
-      id,
-      title: id,
-      right: (
-        <select
-          defaultValue={globals[id]}
-          onChange={(event) => {
-            onHide();
-            // the empty option clears the preference; the rest are feature values
-            toggle(id, event.currentTarget.value as Globals[typeof id]);
-          }}
-        >
-          <option value="">{options.defaultOption}</option>
-          {Object.values(options.features[id]).map((option) => (
-            <option key={option}>{option}</option>
-          ))}
-        </select>
-      ),
-    }));
+    options.keys.map((id) => {
+      // A story that pins a feature in its own `globals` always wins, so the
+      // toolbar offers it read-only rather than accepting a discarded change.
+      const pinnedTo = pinned[id];
+
+      return {
+        id,
+        title: id,
+        right: (
+          <Select
+            defaultValue={globals[id]}
+            disabled={pinnedTo !== undefined}
+            title={
+              pinnedTo === undefined
+                ? undefined
+                : `This story sets ${id} to ${pinnedTo}.`
+            }
+            onChange={(event) => {
+              onHide();
+              // the empty option clears the preference; the rest are feature values
+              toggle(id, event.currentTarget.value as Globals[typeof id]);
+            }}
+          >
+            <option value="">{options.defaultOption}</option>
+            {Object.values(options.features[id]).map((option) => (
+              <option key={option}>{option}</option>
+            ))}
+          </Select>
+        ),
+      };
+    });
 
   return (
     <WithTooltip
