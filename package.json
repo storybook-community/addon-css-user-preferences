@@ -1,6 +1,6 @@
 {
   "name": "@storybook-community/addon-css-user-preferences",
-  "version": "0.0.3",
+  "version": "1.0.0",
   "description": "Emulate CSS user preferences in Storybook",
   "keywords": [
     "storybook-addons",
