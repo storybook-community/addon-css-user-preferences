@@ -240,3 +240,80 @@ PerStory.test("applies the story parameter", async ({ canvas }) => {
 PerStory.test("rewrites the condition too", async ({ canvasElement }) => {
   await waitFor(() => expect(conditionsOf(canvasElement)[0]).toBe("all"));
 });
+
+/**
+ * A `<link>` is in the document before its sheet is, so the rewrite its own
+ * insertion triggers cannot reach it, and loading is not a DOM mutation, so
+ * nothing re-fires the observer when the sheet finally arrives.
+ */
+const LINKED_CSS = `
+  .css-user-prefs-linked { color: ${RED}; }
+  @media (prefers-color-scheme: dark) {
+    .css-user-prefs-linked { color: ${GREEN}; }
+  }
+`;
+
+function LinkedSubject() {
+  return (
+    <div data-testid="linked-host">
+      <p className="css-user-prefs-linked" data-testid="linked-subject">
+        Emulated preference
+      </p>
+    </div>
+  );
+}
+
+export const FromALinkedStylesheet = meta.story({
+  name: "CSS arriving via link",
+  tags: ["spec", "integration"],
+  render: () => <LinkedSubject />,
+  globals: { "prefers-color-scheme": "dark" },
+  decorators: [
+    withStoryCard({
+      title: "A stylesheet that loads over the network",
+      content: (
+        <p>
+          The sheet of a <code>&lt;link&gt;</code> does not exist yet when the
+          element mounts. The addon rewrites it once it has loaded, so a linked
+          stylesheet is emulated like an inline one.
+        </p>
+      ),
+    }),
+  ],
+});
+
+/**
+ * Mounts the stylesheet the way a lazily loaded one arrives: after the story has
+ * rendered, with nothing rendering again afterwards to paper over the gap.
+ */
+async function linkStylesheet(canvasElement: HTMLElement) {
+  const link = document.createElement("link");
+  link.rel = "stylesheet";
+  // A fresh URL every time, so the sheet is fetched rather than served from
+  // cache, and the element is in the document before its sheet is.
+  link.href = URL.createObjectURL(new Blob([LINKED_CSS], { type: "text/css" }));
+
+  canvasElement.querySelector('[data-testid="linked-host"]')!.append(link);
+  expect(link.sheet).toBe(null);
+
+  await waitFor(() => expect(link.sheet).not.toBe(null));
+
+  return link;
+}
+
+/** The media conditions of a linked stylesheet, in source order. */
+const conditionsIn = (sheet: CSSStyleSheet) =>
+  [...(sheet.cssRules as unknown as CSSRule[])]
+    .filter((rule): rule is CSSMediaRule => rule instanceof CSSMediaRule)
+    .map((rule) => rule.media.mediaText);
+
+FromALinkedStylesheet.test("rewrites the condition once the sheet has loaded", async ({ canvasElement }) => {
+  const link = await linkStylesheet(canvasElement);
+  await waitFor(() => expect(conditionsIn(link.sheet!)[0]).toBe("all"));
+});
+
+FromALinkedStylesheet.test("applies the dark rule from the linked sheet", async ({ canvas, canvasElement }) => {
+  await linkStylesheet(canvasElement);
+  const subject = canvas.getByTestId("linked-subject");
+  await waitFor(() => expect(colorOf(subject)).toBe(GREEN));
+});
