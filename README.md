@@ -63,6 +63,23 @@ Returning every preference to its system default puts the browser's own
 `window.matchMedia` back, so a Storybook that is not emulating anything is left
 untouched.
 
+## Cross-origin stylesheets
+
+The rewriting works through the CSSOM, and the browser only exposes a
+stylesheet's rules to a page that is allowed to read them. A `<link>` to another
+origin without a `crossorigin` attribute — a Google Fonts or CDN stylesheet, say
+— is fetched no-CORS, which leaves the sheet unreadable *even when the server
+sends `access-control-allow-origin: *`*: origin-cleanliness follows the request
+mode, not the response header alone.
+
+Such a sheet is skipped, with one `console.warn` naming its `href`. Its
+`prefers-*` conditions keep answering the real browser preference instead of the
+toolbar. To opt one back in, ask for it with CORS:
+
+```html
+<link rel="stylesheet" crossorigin="anonymous" href="https://cdn.example/theme.css" />
+```
+
 ## Options
 
 ### prefers-color-scheme

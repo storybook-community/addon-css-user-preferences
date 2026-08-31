@@ -210,3 +210,53 @@ Rules.test("walks a whole document styleSheets list", async () => {
     el.remove();
   }
 });
+
+/**
+ * A stand-in for a sheet that is not origin-clean. The real thing needs a
+ * cross-origin `<link>`, which a test page cannot arrange reliably; what
+ * matters is the CSSOM contract — the `cssRules` getter throws `SecurityError`.
+ */
+function unreadableSheet(href: string) {
+  return {
+    href,
+    get cssRules(): CSSRuleList {
+      throw new DOMException("cross-origin", "SecurityError");
+    },
+  } as unknown as CSSStyleSheet;
+}
+
+Rules.test("skips a sheet it is not allowed to read, and keeps going", async () => {
+  const el = document.createElement("style");
+  el.textContent = "@media (prefers-color-scheme: dark) { a { color: red } }";
+  document.head.append(el);
+  try {
+    const sheet = el.sheet as CSSStyleSheet;
+    const containers = [unreadableSheet("https://cdn.example/font.css"), sheet];
+
+    // The throw must not escape: `processAll` runs on the render path.
+    processCSS(containers, globals({ "prefers-color-scheme": "dark" }));
+
+    // And the readable sheet after it is still rewritten.
+    await expect((sheet.cssRules[0] as CSSMediaRule).media.mediaText).toBe("all");
+  } finally {
+    el.remove();
+  }
+});
+
+Rules.test("warns once per unreadable sheet, naming its href", async () => {
+  const messages: string[] = [];
+  const warn = console.warn;
+  console.warn = (...args: unknown[]) => void messages.push(String(args[0]));
+  try {
+    const containers = [unreadableSheet("https://cdn.example/warned-once.css")];
+
+    processCSS(containers, globals({ "prefers-color-scheme": "dark" }));
+    processCSS(containers, globals({ "prefers-color-scheme": "light" }));
+  } finally {
+    console.warn = warn;
+  }
+
+  await expect(messages).toHaveLength(1);
+  await expect(messages[0]).toContain("https://cdn.example/warned-once.css");
+  await expect(messages[0]).toContain('crossorigin="anonymous"');
+});
