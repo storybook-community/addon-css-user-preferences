@@ -29,7 +29,7 @@
   },
   "author": "Jonathan Neal <jonathantneal@hotmail.com>",
   "license": "CC0-1.0",
-  "packageManager": "pnpm@10.34.5",
+  "packageManager": "pnpm@11.24.0",
   "type": "module",
   "exports": {
     ".": {
