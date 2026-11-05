@@ -1,5 +1,11 @@
 # @storybook-community/addon-css-user-preferences
 
+## 1.0.1
+
+### Patch Changes
+
+- [#18](https://github.com/storybook-community/addon-css-user-preferences/pull/18) [`7be2386`](https://github.com/storybook-community/addon-css-user-preferences/commit/7be23864132364ed47b14168a9057694293d3ae5) Thanks [@unional](https://github.com/unional)! - Include `CHANGELOG.md` in the published package.
+
 ## 1.0.0
 
 ### Major Changes
