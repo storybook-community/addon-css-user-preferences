@@ -6,7 +6,19 @@ export const features = {
   "prefers-reduced-data": ["no-preference", "reduce"],
   "prefers-reduced-motion": ["no-preference", "reduce"],
   "prefers-reduced-transparency": ["no-preference", "reduce"],
+  hover: ["hover", "none"],
+  "any-hover": ["hover", "none"],
+  pointer: ["fine", "coarse", "none"],
+  "any-pointer": ["fine", "coarse", "none"],
 } as const;
+
+/**
+ * Values that make a feature false in the boolean context, `(feature)`. Per
+ * Media Queries 4 that is `none` and, for the `prefers-*` features,
+ * `no-preference`.
+ */
+export const isFalseInBooleanContext = (value: string) =>
+  value === "no-preference" || value === "none";
 
 export const defaultOption = 'system default'
 

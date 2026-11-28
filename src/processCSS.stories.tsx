@@ -60,6 +60,41 @@ const ROWS: Row[] = [
     selected: { "prefers-color-scheme": "dark" },
     note: "unrelated feature, never touched",
   },
+  {
+    condition: "(hover: hover)",
+    selected: { hover: "none" },
+    note: "a feature without the prefers- prefix",
+  },
+  {
+    condition: "(hover)",
+    selected: { hover: "none" },
+    note: "boolean form, none counts as off",
+  },
+  {
+    condition: "(pointer: coarse)",
+    selected: { pointer: "coarse" },
+    note: "one of three values matches",
+  },
+  {
+    condition: "(pointer: fine)",
+    selected: { pointer: "coarse" },
+    note: "the other values are switched off",
+  },
+  {
+    condition: "(any-hover: hover)",
+    selected: { hover: "none" },
+    note: "hover does not reach any-hover",
+  },
+  {
+    condition: "(hover: hover)",
+    selected: { "any-hover": "none" },
+    note: "any-hover does not reach hover",
+  },
+  {
+    condition: "(any-pointer: coarse)",
+    selected: { "any-pointer": "coarse" },
+    note: "any-pointer is emulated on its own",
+  },
 ];
 
 const cell: React.CSSProperties = {
@@ -150,7 +185,33 @@ Rules.test("rewrites every documented case as the table claims", async ({ canvas
     "all",
     "not all",
     "(min-width: 30em)",
+    "not all",
+    "not all",
+    "all",
+    "not all",
+    "(any-hover: hover)",
+    "(hover: hover)",
+    "all",
   ]);
+});
+
+Rules.test("reaches a condition nested in a style rule, as Tailwind v4 emits hover:", async () => {
+  const el = document.createElement("style");
+  el.textContent =
+    "@layer utilities { .hover\\:underline { &:hover { @media (hover: hover) { text-decoration-line: underline } } } }";
+  document.head.append(el);
+  try {
+    const sheet = el.sheet as CSSStyleSheet;
+    processCSS(sheet.cssRules, globals({ hover: "none" }));
+
+    const layer = sheet.cssRules[0] as CSSLayerBlockRule;
+    const utility = layer.cssRules[0] as CSSStyleRule;
+    const state = utility.cssRules[0] as CSSStyleRule;
+    const media = state.cssRules[0] as CSSMediaRule;
+    await expect(media.media.mediaText).toBe("not all");
+  } finally {
+    el.remove();
+  }
 });
 
 Rules.test("documents every supported feature somewhere", async () => {

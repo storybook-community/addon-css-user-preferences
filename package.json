@@ -18,6 +18,8 @@
     "prefers-reduced-data",
     "prefers-reduced-motion",
     "prefers-reduced-transparency",
+    "hover",
+    "pointer",
     "prefs",
     "toolbar",
     "user",

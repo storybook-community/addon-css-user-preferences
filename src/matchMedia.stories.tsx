@@ -378,6 +378,51 @@ FailsClosed.test("reads the boolean form as no-preference means off", async () =
   expect(real(off).matches).toBe(false);
 });
 
+FailsClosed.test("reads the boolean form as none means off", async () => {
+  const on = rewriteQuery("(pointer)", globals({ pointer: "coarse" }));
+  const off = rewriteQuery("(pointer)", globals({ pointer: "none" }));
+
+  await expect(real(on).matches).toBe(true);
+  expect(real(off).matches).toBe(false);
+});
+
+FailsClosed.test("keeps hover and any-hover apart", async () => {
+  await expect(
+    rewriteQuery("(any-hover: hover)", globals({ hover: "none" }))
+  ).toBe("(any-hover: hover)");
+  expect(rewriteQuery("(hover: hover)", globals({ "any-hover": "none" }))).toBe(
+    "(hover: hover)"
+  );
+});
+
+/**
+ * Interaction media features: a touch device has no hover and a coarse
+ * pointer, which a desktop browser running the story cannot report itself.
+ */
+export const InteractionMedia = meta.story({
+  name: "Hover and pointer",
+  tags: ["spec", "integration"],
+  globals: { hover: "none", pointer: "coarse" },
+});
+
+InteractionMedia.test("reports no hover", async () => {
+  await expect(window.matchMedia("(hover: hover)").matches).toBe(false);
+  expect(window.matchMedia("(hover: none)").matches).toBe(true);
+  expect(window.matchMedia("(hover)").matches).toBe(false);
+});
+
+InteractionMedia.test("reports a coarse pointer", async () => {
+  await expect(window.matchMedia("(pointer: coarse)").matches).toBe(true);
+  expect(window.matchMedia("(pointer: fine)").matches).toBe(false);
+  expect(window.matchMedia("(pointer: none)").matches).toBe(false);
+});
+
+InteractionMedia.test("leaves any-hover and any-pointer on the real value", async () => {
+  for (const query of ["(any-hover: hover)", "(any-pointer: fine)"]) {
+    await expect(window.matchMedia(query).matches).toBe(real(query).matches);
+  }
+});
+
 /**
  * The patch belongs to the addon. A Storybook that is not emulating anything
  * must be left with the browser's own function.

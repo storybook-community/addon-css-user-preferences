@@ -317,3 +317,89 @@ FromALinkedStylesheet.test("applies the dark rule from the linked sheet", async 
   const subject = canvas.getByTestId("linked-subject");
   await waitFor(() => expect(colorOf(subject)).toBe(GREEN));
 });
+
+/**
+ * Tailwind v4 wraps every `hover:` variant in `@media (hover: hover)`, nested
+ * inside the utility's own rule. Emulating `hover: none` switches those off, so
+ * a story can show what a touch device gets.
+ */
+function TailwindHoverSubject() {
+  return (
+    <p className="hover:underline" data-testid="tailwind-hover">
+      Underlined on hover, where hover exists
+    </p>
+  );
+}
+
+/**
+ * The `@media` conditions that guard a rule matching `selector`, whichever way
+ * round they are nested: Tailwind's build flattens to `@media { .a:hover {} }`,
+ * while native nesting gives `.a { &:hover { @media {} } }`.
+ */
+function conditionsGuarding(selector: string) {
+  const found: string[] = [];
+
+  const targets = (rule: CSSRule): boolean =>
+    (rule instanceof CSSStyleRule && rule.selectorText.includes(selector)) ||
+    ("cssRules" in rule &&
+      [...((rule as CSSGroupingRule).cssRules as unknown as CSSRule[])].some(targets));
+
+  const walk = (rules: CSSRuleList, inside: boolean) => {
+    for (const rule of rules as unknown as CSSRule[]) {
+      const under =
+        inside || (rule instanceof CSSStyleRule && rule.selectorText.includes(selector));
+
+      if (rule instanceof CSSMediaRule && (under || targets(rule))) {
+        found.push(rule.media.mediaText);
+      }
+      if ("cssRules" in rule) walk((rule as CSSGroupingRule).cssRules, under);
+    }
+  };
+
+  for (const sheet of document.styleSheets) {
+    try {
+      walk(sheet.cssRules, false);
+    } catch {
+      // Not origin-clean, so not ours to inspect.
+    }
+  }
+
+  return found;
+}
+
+export const TailwindNoHover = meta.story({
+  name: "Tailwind hover: on a touch device",
+  tags: ["use-case", "integration"],
+  render: () => <TailwindHoverSubject />,
+  parameters: defineCssUserPrefsParam({ hover: "none", pointer: "coarse" }),
+  decorators: [
+    withStoryCard({
+      title: "No hover, coarse pointer",
+      content: (
+        <p>
+          Tailwind's <code>hover:</code> variants sit behind{" "}
+          <code>@media (hover: hover)</code>. With <code>hover</code> emulated as{" "}
+          <code>none</code>, they stay off, as they would on a phone.
+        </p>
+      ),
+    }),
+    showSource({
+      source: dedent`
+        export const Touch = meta.story({
+          parameters: defineCssUserPrefsParam({ hover: 'none', pointer: 'coarse' })
+        })
+      `,
+    }),
+  ],
+});
+
+TailwindNoHover.test("switches off Tailwind's hover: wrapper", async () => {
+  await waitFor(() =>
+    expect(conditionsGuarding(".hover\\:underline")).toEqual(["not all"])
+  );
+});
+
+TailwindNoHover.test("tells JavaScript there is no hover either", async () => {
+  await expect(window.matchMedia("(hover: hover)").matches).toBe(false);
+  expect(window.matchMedia("(pointer: coarse)").matches).toBe(true);
+});

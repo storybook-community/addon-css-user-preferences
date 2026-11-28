@@ -84,6 +84,31 @@ const CSS = `
   @media (prefers-reduced-transparency: reduce) {
     .cup-glass { background: rgb(59, 130, 246); }
   }
+
+  /* 6. hover, 7. any-hover */
+  .cup-hint { font-size: 12px; }
+  .cup-hint::after { content: "hover to reveal"; }
+  @media (hover: none) {
+    .cup-hint::after { content: "tap to reveal"; }
+  }
+  .cup-any-hint { font-size: 12px; }
+  .cup-any-hint::after { content: "some input can hover"; }
+  @media (any-hover: none) {
+    .cup-any-hint::after { content: "no input can hover"; }
+  }
+
+  /* 8. pointer, 9. any-pointer */
+  .cup-target {
+    min-height: 24px; padding: 0 10px;
+    border: 1px solid rgba(136, 136, 136, 0.6); border-radius: 6px;
+    background: transparent; color: inherit; font: inherit; font-size: 12px;
+  }
+  @media (pointer: coarse) {
+    .cup-target-primary { min-height: 44px; }
+  }
+  @media (any-pointer: coarse) {
+    .cup-target-any { min-height: 44px; }
+  }
 `;
 
 function Card() {
@@ -120,6 +145,30 @@ function Card() {
         <div className="cup-row">
           <span className="cup-label">prefers-reduced-transparency</span>
           <div className="cup-glass" data-testid="glass" />
+        </div>
+
+        <div className="cup-row">
+          <span className="cup-label">hover</span>
+          <span className="cup-hint" data-testid="hint" />
+        </div>
+
+        <div className="cup-row">
+          <span className="cup-label">any-hover</span>
+          <span className="cup-any-hint" data-testid="any-hint" />
+        </div>
+
+        <div className="cup-row">
+          <span className="cup-label">pointer</span>
+          <button type="button" className="cup-target cup-target-primary" data-testid="target">
+            Tap target
+          </button>
+        </div>
+
+        <div className="cup-row">
+          <span className="cup-label">any-pointer</span>
+          <button type="button" className="cup-target cup-target-any" data-testid="any-target">
+            Tap target
+          </button>
         </div>
       </div>
     </>
@@ -169,6 +218,18 @@ export const Playground = meta.story({
         }
         @media (prefers-reduced-transparency: reduce) {
           .cup-glass { background: rgb(59, 130, 246); }
+        }
+        @media (hover: none) {
+          .cup-hint::after { content: "tap to reveal"; }
+        }
+        @media (any-hover: none) {
+          .cup-any-hint::after { content: "no input can hover"; }
+        }
+        @media (pointer: coarse) {
+          .cup-target-primary { min-height: 44px; }
+        }
+        @media (any-pointer: coarse) {
+          .cup-target-any { min-height: 44px; }
         }
       `,
     }),
@@ -252,6 +313,44 @@ Playground.test(
   }
 );
 
+const afterContent = (el: Element) => getComputedStyle(el, "::after").content;
+
+Playground.test(
+  "no hover swaps the hint for a touch one",
+  { globals: { hover: "none" } },
+  async ({ canvas }) => {
+    const hint = canvas.getByTestId("hint");
+    await waitFor(() => expect(afterContent(hint)).toBe('"tap to reveal"'));
+  }
+);
+
+Playground.test(
+  "no hover on any input swaps its hint too",
+  { globals: { "any-hover": "none" } },
+  async ({ canvas }) => {
+    const hint = canvas.getByTestId("any-hint");
+    await waitFor(() => expect(afterContent(hint)).toBe('"no input can hover"'));
+  }
+);
+
+Playground.test(
+  "a coarse pointer enlarges the tap target",
+  { globals: { pointer: "coarse" } },
+  async ({ canvas }) => {
+    const target = canvas.getByTestId("target");
+    await waitFor(() => expect(getComputedStyle(target).minHeight).toBe("44px"));
+  }
+);
+
+Playground.test(
+  "a coarse pointer on any input enlarges its tap target",
+  { globals: { "any-pointer": "coarse" } },
+  async ({ canvas }) => {
+    const target = canvas.getByTestId("any-target");
+    await waitFor(() => expect(getComputedStyle(target).minHeight).toBe("44px"));
+  }
+);
+
 /**
  * With nothing selected the addon leaves every condition alone, so the browser's
  * own preferences still decide. Asserting on the conditions rather than on a
@@ -273,5 +372,9 @@ Playground.test("rewrites nothing until a preference is chosen", async ({ canvas
     "(prefers-reduced-data: reduce)",
     "(prefers-reduced-motion: reduce)",
     "(prefers-reduced-transparency: reduce)",
+    "(hover: none)",
+    "(any-hover: none)",
+    "(pointer: coarse)",
+    "(any-pointer: coarse)",
   ]);
 });

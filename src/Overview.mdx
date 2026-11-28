@@ -4,9 +4,10 @@ import { Meta } from '@storybook/addon-docs/blocks'
 
 # CSS User Preferences
 
-Emulate the `prefers-*` CSS user preferences in Storybook, so you can see how a
-component responds to dark mode, reduced motion, or reduced data without
-changing your operating system settings.
+Emulate the `prefers-*` CSS user preferences and the `hover` and `pointer`
+interaction features in Storybook, so you can see how a component responds to
+dark mode, reduced motion, reduced data, or a touchscreen without changing your
+operating system settings or your device.
 
 ## What makes it different
 
@@ -49,7 +50,7 @@ condition itself — which is why a component under emulation behaves the way it
 will in front of a real reader.
 
 That is the entire mechanism. The addon walks `document.styleSheets`, descends
-into nested rules, and for each `CSSMediaRule` mentioning a `prefers-*` feature
+into nested rules, and for each `CSSMediaRule` mentioning an emulated feature
 swaps the condition for `all` or `not all`. It remembers each rule's original
 condition text, so every toggle rewrites from what you wrote rather than from
 the previous rewrite.

@@ -46,7 +46,7 @@ export function rewriteQuery(query: string, features: Globals) {
 
     rewritten = rewritten.replace(
       booleanOf(feature),
-      value === "no-preference" ? NEVER : ALWAYS
+      options.isFalseInBooleanContext(value) ? NEVER : ALWAYS
     );
   }
 

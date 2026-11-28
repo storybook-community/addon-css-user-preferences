@@ -80,7 +80,7 @@ sends `access-control-allow-origin: *`*: origin-cleanliness follows the request
 mode, not the response header alone.
 
 Such a sheet is skipped, with one `console.warn` naming its `href`. Its
-`prefers-*` conditions keep answering the real browser preference instead of the
+media conditions keep answering the real browser value instead of the
 toolbar. To opt one back in, ask for it with CORS:
 
 ```html
@@ -182,3 +182,41 @@ The `prefers-reduced-transparency` preference is used to detect if the user has 
 ```
 
 [![W3C Specification](https://img.shields.io/badge/Spec-005A9C?logo=w3c&amp;style=flat-square)](https://www.w3.org/TR/mediaqueries-5/#prefers-reduced-transparency)
+
+### hover and any-hover
+
+The `hover` feature reports whether the primary input can hover over elements: `hover` for a mouse, `none` for a touchscreen. `any-hover` asks the same of every available input. Emulating `hover: none` shows what a phone gets, including Tailwind CSS v4's `hover:` variants, which it wraps in `@media (hover: hover)`.
+
+```css
+.card .actions {
+  opacity: 1;
+}
+
+@media (hover: hover) {
+  .card .actions {
+    opacity: 0;
+  }
+
+  .card:hover .actions {
+    opacity: 1;
+  }
+}
+```
+
+[![W3C Specification](https://img.shields.io/badge/Spec-005A9C?logo=w3c&amp;style=flat-square)](https://www.w3.org/TR/mediaqueries-4/#hover) [![MDN Documentation](https://shields.io/badge/docs-black?logo=mozilla&amp;style=flat-square)](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/hover)
+
+### pointer and any-pointer
+
+The `pointer` feature reports how accurate the primary pointing device is: `fine` for a mouse or stylus, `coarse` for a finger, `none` for no pointer at all. `any-pointer` asks the same of every available input.
+
+```css
+@media (pointer: coarse) {
+  .button {
+    min-block-size: 44px;
+  }
+}
+```
+
+[![W3C Specification](https://img.shields.io/badge/Spec-005A9C?logo=w3c&amp;style=flat-square)](https://www.w3.org/TR/mediaqueries-4/#pointer) [![MDN Documentation](https://shields.io/badge/docs-black?logo=mozilla&amp;style=flat-square)](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/pointer)
+
+Emulation only changes what media queries and `window.matchMedia` report. It does not change the input itself: a test that hovers with a real mouse still triggers `:hover`, and the browser still fires mouse events rather than touch events.

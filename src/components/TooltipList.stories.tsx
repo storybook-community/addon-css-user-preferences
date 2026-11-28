@@ -66,7 +66,10 @@ export const AllFeatures = meta.story({
 
 AllFeatures.test("lists every supported feature", async ({ canvas }) => {
   for (const id of options.keys) {
-    await expect(canvas.getByText(id)).toBeInTheDocument();
+    // `hover` is a feature and a value, so match the row title, not an option.
+    await expect(
+      canvas.getByText(id, { ignore: "option" })
+    ).toBeInTheDocument();
   }
 });
 

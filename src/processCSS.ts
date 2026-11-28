@@ -39,7 +39,7 @@ export function processCSS(
           // replace boolean uses of the feature
           currentMediaText = currentMediaText.replace(
             `(${feature})`,
-            value === "no-preference" ? "not all" : "all"
+            options.isFalseInBooleanContext(value) ? "not all" : "all"
           );
         }
       }
@@ -88,7 +88,7 @@ const getMediaText = (target: CSSMediaRule) => {
 const conditionTextMap = new WeakMap<CSSRule, string>();
 
 /**
- * Tells the reader once why a stylesheet's `prefers-*` conditions ignore the
+ * Tells the reader once why a stylesheet's emulated conditions ignore the
  * toolbar, since a silently skipped sheet points nowhere near its own cause.
  */
 function warnUnreadable(target: CSSContainer) {
