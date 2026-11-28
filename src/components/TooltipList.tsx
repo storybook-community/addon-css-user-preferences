@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import type { FunctionComponent, SyntheticEvent } from "react";
-import { styled } from "storybook/theming";
+import { styled } from "storybook/theming/emotion";
 import ListItem from "./List";
 import type { ListItemProps } from "./List";
 

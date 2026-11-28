@@ -1,7 +1,8 @@
 import { showSource, withStoryCard } from "@repobuddy/storybook";
 import dedent from "dedent";
 import { expect } from "storybook/test";
-import { ThemeProvider, ensure, themes } from "storybook/theming";
+import { themes } from "storybook/theming";
+import { ThemeProvider, ensure } from "storybook/theming/emotion";
 import React from "react";
 import preview from "../../.storybook/preview";
 import { Select } from "./Select";

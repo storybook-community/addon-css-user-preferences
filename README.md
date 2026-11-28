@@ -4,6 +4,13 @@ This toolbar addon allows you to emulate CSS user preferences in Storybook.
 
 <p align="center"><img src="/src/screenshot.webp" width="50%" /></p>
 
+## Compatibility
+
+| Addon version | Storybook version |
+| ------------- | ----------------- |
+| 2.x           | 11.x              |
+| 1.x           | 10.x              |
+
 ## Getting started
 
 First, install the addon.

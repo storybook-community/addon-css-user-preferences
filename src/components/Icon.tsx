@@ -1,6 +1,6 @@
 import React from "react";
 import type { ComponentProps } from "react";
-import { styled } from "storybook/theming";
+import { styled } from "storybook/theming/emotion";
 
 type IconProps = ComponentProps<"svg">;
 
