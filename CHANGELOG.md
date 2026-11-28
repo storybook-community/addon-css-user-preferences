@@ -1,5 +1,17 @@
 # @storybook-community/addon-css-user-preferences
 
+## 2.0.0
+
+### Major Changes
+
+- [#22](https://github.com/storybook-community/addon-css-user-preferences/pull/22) [`65222ee`](https://github.com/storybook-community/addon-css-user-preferences/commit/65222ee1e5470543bd4acc89ca6f3a55ede23d7b) Thanks [@unional](https://github.com/unional)! - Support Storybook 11. The addon now declares a peer dependency on `storybook@^11.0.0-0`, which also accepts Storybook 11 prereleases, and no longer installs alongside Storybook 10; keep using version 1.x with Storybook 10.
+
+  The toolbar button now opens its menu with Storybook 11's `PopoverProvider`, which replaces the removed `WithTooltip` and `IconButton` components.
+
+### Patch Changes
+
+- [#18](https://github.com/storybook-community/addon-css-user-preferences/pull/18) [`7be2386`](https://github.com/storybook-community/addon-css-user-preferences/commit/7be23864132364ed47b14168a9057694293d3ae5) Thanks [@unional](https://github.com/unional)! - Include `CHANGELOG.md` in the published package.
+
 ## 1.0.0
 
 ### Major Changes
