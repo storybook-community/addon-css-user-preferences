@@ -1,4 +1,4 @@
-import { styled } from "storybook/theming";
+import { styled } from "storybook/theming/emotion";
 
 /**
  * A native `select` that follows Storybook's manager theme.

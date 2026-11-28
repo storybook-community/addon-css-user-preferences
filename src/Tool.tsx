@@ -4,7 +4,7 @@ import type { Globals } from "./useGlobals";
 import React, { useCallback } from "react";
 import { useGlobals as useStorybookGlobals } from "storybook/manager-api";
 import { useGlobals } from "./useGlobals";
-import { IconButton, WithTooltip } from "storybook/internal/components";
+import { Button, PopoverProvider } from "storybook/internal/components";
 import { TOOL_ID } from "./constants";
 import * as options from "./options";
 import { TooltipList } from "./components/TooltipList";
@@ -56,14 +56,21 @@ export const Tool = () => {
     });
 
   return (
-    <WithTooltip
-      placement="top"
-      trigger="click"
-      tooltip={(props) => <TooltipList items={createItems(props)} />}
+    <PopoverProvider
+      ariaLabel={options.title}
+      placement="bottom"
+      padding={0}
+      popover={(props) => <TooltipList items={createItems(props)} />}
     >
-      <IconButton key={TOOL_ID} title={options.title}>
+      <Button
+        key={TOOL_ID}
+        ariaLabel={options.title}
+        variant="ghost"
+        size="small"
+        padding="small"
+      >
         <Icon />
-      </IconButton>
-    </WithTooltip>
+      </Button>
+    </PopoverProvider>
   );
 };

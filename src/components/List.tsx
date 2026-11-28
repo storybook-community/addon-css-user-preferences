@@ -1,6 +1,6 @@
 import React from "react";
 import type { ComponentProps, FunctionComponent, ReactNode } from "react";
-import { styled } from "storybook/theming";
+import { styled } from "storybook/theming/emotion";
 import { transparentize } from "polished";
 
 export interface TitleProps {}
